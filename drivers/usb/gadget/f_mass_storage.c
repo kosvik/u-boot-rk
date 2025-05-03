@@ -277,6 +277,15 @@ static const char fsg_string_interface[] = "Mass Storage";
 
 /*-------------------------------------------------------------------------*/
 
+#ifdef CONFIG_TARGET_YF_RK3566
+extern void yf_watchdog_reset(void);
+#define WD_RESET yf_watchdog_reset
+#else
+#define WD_RESET() do {} while (0)     /* Dummy */
+#endif
+
+/*-------------------------------------------------------------------------*/
+
 #define GFP_ATOMIC ((gfp_t) 0)
 #define PAGE_CACHE_SHIFT	12
 #define PAGE_CACHE_SIZE		(1 << PAGE_CACHE_SHIFT)
@@ -651,6 +660,7 @@ static int sleep_thread(struct fsg_common *common)
 	int	rc = 0;
 	int i = 0, k = 0;
 
+	WD_RESET();
 	/* Wait until a signal arrives or we are woken up */
 	for (;;) {
 		if (common->thread_wakeup_needed)
@@ -663,6 +673,7 @@ static int sleep_thread(struct fsg_common *common)
 		}
 
 		if (k == 10) {
+			WD_RESET();
 			/* Handle CTRL+C */
 			if (ctrlc())
 				return -EPIPE;
