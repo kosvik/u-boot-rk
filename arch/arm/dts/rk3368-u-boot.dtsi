@@ -80,6 +80,10 @@
 	u-boot,dm-pre-reloc;
 };
 
+&gpio3 {
+    u-boot,dm-pre-reloc;
+};
+
 &saradc {
 	u-boot,dm-spl;
 	status = "okay";
